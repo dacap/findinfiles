@@ -20,28 +20,10 @@ var ignoreCase bool
 var oneLevel bool
 var verbose bool
 var filenameFilter = new(FilenameFilter)
+var patterns Patterns
 
 func isBinary(line string) bool {
 	return strings.IndexByte(line, byte(0)) >= 0
-}
-
-func matchPatterns(line string) int {
-	firstIndex := -1
-	matches := 0
-	for _, arg := range flag.Args() {
-		i := strings.Index(line, arg)
-		if i >= 0 {
-			if (firstIndex < 0 ||
-			    firstIndex > i) {
-				firstIndex = i
-			}
-			matches++
-		}
-	}
-	if matches == flag.NArg() {
-		return firstIndex
-	}
-	return -1
 }
 
 func searchInFileContent(fn string) error {
@@ -59,7 +41,7 @@ func searchInFileContent(fn string) error {
 			if verbose { fmt.Println(fn + " is binary") }
 			break
 		}
-		i := matchPatterns(line)
+		i := patterns.match(line)
 		if i >= 0 {
 			fmt.Println(
 				fn + ":" +
@@ -88,6 +70,13 @@ func main() {
 	flag.BoolVar(&verbose, "v", false, "verbose output")
 	flag.Var(&filterFlag, ".", "filter by extension (e.g. -. txt)")
 	flag.Parse()
+
+	for _, pat := range flag.Args() {
+		if ignoreCase {
+			pat = "(?i)" + pat
+		}
+		patterns.append(pat)
+	}
 
 	filepath.Walk(".", func(fn string, info os.FileInfo, err error) error {
 		_, fnOnly := path.Split(fn)
