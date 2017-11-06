@@ -98,6 +98,7 @@ func main() {
 			fmt.Println("Searching in " + fullFn)
 		}
 
-		return searchInFileContent(fullFn)
+		searchInFileContent(fullFn)
+		return nil
 	})
 }
