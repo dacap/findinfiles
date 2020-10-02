@@ -1,6 +1,6 @@
 # findinfiles
 
-> Copyright (C) 2017 David Capello
+> Copyright (C) 2017-2020 David Capello
 >
 > This file is released under the terms of the MIT license.
 > Read [LICENSE.txt](LICENSE.txt) for more information.
